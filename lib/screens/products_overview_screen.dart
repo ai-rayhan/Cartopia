@@ -1,4 +1,5 @@
 import 'package:bussiness_manager/Provider/cart.dart';
+import 'package:bussiness_manager/screens/cart_screen.dart';
 import 'package:bussiness_manager/widgets/badge.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -44,14 +45,15 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             ],
           ),
           Consumer<Cart>(
-              builder: ((_, cart,  ch) => Badge(
-                  value: cart.itemCount.toString(),
-                  child: ch!)),
-                  child: IconButton(
-                    icon: const Icon(Icons.shopping_cart),
-                    onPressed: (() {}),
-                  ),)
-                  
+            builder: ((_, cart, ch) =>
+                Badge(value: cart.itemCount.toString(), child: ch!)),
+            child: IconButton(
+              icon: const Icon(Icons.shopping_cart),
+              onPressed: (() {
+                Navigator.pushNamed(context, CartScreen.routeName);
+              }),
+            ),
+          )
         ],
       ),
       body: ProductsGrid(_showOnlyFavorites),
