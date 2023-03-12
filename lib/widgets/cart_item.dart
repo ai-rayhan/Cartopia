@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../Provider/cart.dart';
 
-
 class CartItem extends StatelessWidget {
   final String id;
   final String productId;
@@ -11,13 +10,8 @@ class CartItem extends StatelessWidget {
   final int quantity;
   final String title;
 
-   const CartItem(
-    this.id,
-    this.productId,
-    this.price,
-    this.quantity,
-    this.title, {super.key}
-  );
+  const CartItem(this.id, this.productId, this.price, this.quantity, this.title,
+      {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +32,24 @@ class CartItem extends StatelessWidget {
         ),
       ),
       direction: DismissDirection.endToStart,
+      confirmDismiss: (direction) {
+        return showDialog(
+          context: context,
+          builder: ((context) {
+            return AlertDialog(
+              content: const Text("Are you sure delete to cart?"),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: const Text("No")),
+                TextButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    child: const Text("Yes")),
+              ],
+            );
+          }),
+        );
+      },
       onDismissed: (direction) {
         Provider.of<Cart>(context, listen: false).removeItem(productId);
       },
