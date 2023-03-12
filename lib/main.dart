@@ -5,9 +5,10 @@ import 'package:provider/provider.dart';
 import 'Provider/Products.dart';
 import '../Provider/orders.dart';
 import 'screens/cart_screen.dart';
-import 'screens/home_page.dart';
+import 'screens/admin_product_screen.dart';
 import 'screens/orders_screen.dart';
 import 'screens/product_detail_screen.dart';
+import 'screens/products_overview_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,24 +22,25 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create:((context) =>Products())),
+        ChangeNotifierProvider.value(value:Products()),
         ChangeNotifierProvider(create:((context) =>Cart())),
         ChangeNotifierProvider(create:((context) =>Orders())),
 
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: ThemeData.light().copyWith(
-          appBarTheme: const AppBarTheme(
-              centerTitle: true,
-              titleTextStyle: TextStyle(color: Colors.black, fontSize: 20)),
-        ),
+        theme:ThemeData(
+            primarySwatch: Colors.purple,
+            fontFamily: 'Lato',
+          ),
+        
         title: 'Bussines_Manager',
-        home:HomeScreen(),
+        home:ProductsOverviewScreen(),
         routes: {
           ProductDetailScreen.routeName: (ctx) => const ProductDetailScreen(),
           CartScreen.routeName: (ctx) => const CartScreen(),
           OrdersScreen.routename: (ctx) => const OrdersScreen(),
+          UserProductsScreen.routeName: (ctx) =>  UserProductsScreen(),
         }
       ),
     );
