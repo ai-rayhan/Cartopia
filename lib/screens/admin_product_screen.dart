@@ -6,16 +6,15 @@ import '../widgets/admin_product_item.dart';
 import '/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 
+import 'edit_products_screen.dart';
 
 class UserProductsScreen extends StatelessWidget {
-  
   static const routeName = 'productsEditscreen';
 
   const UserProductsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    
     final productsData = Provider.of<Products>(context);
 
     return Scaffold(
@@ -25,7 +24,7 @@ class UserProductsScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
-              // ...
+              Navigator.pushNamed(context, EditProductScreen.routeName);
             },
           ),
         ],
@@ -36,14 +35,14 @@ class UserProductsScreen extends StatelessWidget {
         child: ListView.builder(
           itemCount: productsData.items.length,
           itemBuilder: (_, i) => Column(
-                children: [
-                  UserProductItem(
-                    productsData.items[i].title,
-                    productsData.items[i].imageUrl,
-                  ),
-                  const Divider(),
-                ],
+            children: [
+              UserProductItem(
+                productsData.items[i].title,
+                productsData.items[i].imageUrl,
               ),
+              const Divider(),
+            ],
+          ),
         ),
       ),
     );
