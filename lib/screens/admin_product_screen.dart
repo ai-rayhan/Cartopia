@@ -39,6 +39,7 @@ class UserProductsScreen extends StatelessWidget {
               UserProductItem(
                 productsData.items[i].title,
                 productsData.items[i].imageUrl,
+                productsData.items[i].id,
               ),
               const Divider(),
             ],

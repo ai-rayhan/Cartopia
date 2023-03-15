@@ -51,18 +51,18 @@
 //     }
 //   }
 
-//   _saveForm() {
-//     print(editedProduct.imageUrl);
-//     print(editedProduct.description);
-//     print(editedProduct.title);
-//     Provider.of<Products>(context, listen: false).addProduct(editedProduct);
-//     final isValid = _formKey.currentState?.validate();
-//     if (!isValid!) {
-//       return;
-//     }
-//     _formKey.currentState?.save();
-//     //  Navigator.pop(context);
+// _saveForm() {
+//   print(editedProduct.imageUrl);
+//   print(editedProduct.description);
+//   print(editedProduct.title);
+//   Provider.of<Products>(context, listen: false).addProduct(editedProduct);
+//   final isValid = _formKey.currentState?.validate();
+//   if (!isValid!) {
+//     return;
 //   }
+//   _formKey.currentState?.save();
+//   //  Navigator.pop(context);
+// }
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -238,13 +238,15 @@
 //   }
 // }
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../Provider/Products.dart';
 import '../Provider/product.dart';
-
-
 
 class EditProductScreen extends StatefulWidget {
   static const routeName = '/edit-product';
+
+  const EditProductScreen({super.key});
 
   @override
   _EditProductScreenState createState() => _EditProductScreenState();
@@ -282,26 +284,39 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   void _updateImageUrl() {
     if (!_imageUrlFocusNode.hasFocus) {
+      if ((!_imageUrlController.text.startsWith('http') &&
+              !_imageUrlController.text.startsWith('https')) ||
+          (!_imageUrlController.text.endsWith('.png') &&
+              !_imageUrlController.text.endsWith('.jpg') &&
+              !_imageUrlController.text.endsWith('.jpeg'))) {
+        return;
+      }
       setState(() {});
     }
   }
 
   void _saveForm() {
+    final isValid = _form.currentState!.validate();
+    if (!isValid) {
+      return;
+    }
     _form.currentState!.save();
-    print(_editedProduct.title);
-    print(_editedProduct.description);
-    print(_editedProduct.price);
-    print(_editedProduct.imageUrl);
+    // print(_editedProduct.title);
+    // print(_editedProduct.description);
+    // print(_editedProduct.price);
+    // print(_editedProduct.imageUrl);
+    Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Product'),
+        title: const Text('Edit Product'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.save),
+            icon: const Icon(Icons.save),
             onPressed: _saveForm,
           ),
         ],
@@ -313,7 +328,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           child: ListView(
             children: <Widget>[
               TextFormField(
-                decoration: InputDecoration(labelText: 'Title'),
+                decoration: const InputDecoration(labelText: 'Title'),
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) {
                   FocusScope.of(context).requestFocus(_priceFocusNode);
@@ -329,7 +344,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Price'),
+                decoration: const InputDecoration(labelText: 'Price'),
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
                 focusNode: _priceFocusNode,
@@ -347,7 +362,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Description'),
+                decoration: const InputDecoration(labelText: 'Description'),
                 maxLines: 3,
                 keyboardType: TextInputType.multiline,
                 focusNode: _descriptionFocusNode,
@@ -367,7 +382,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   Container(
                     width: 100,
                     height: 100,
-                    margin: EdgeInsets.only(
+                    margin: const EdgeInsets.only(
                       top: 8,
                       right: 10,
                     ),
@@ -378,7 +393,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       ),
                     ),
                     child: _imageUrlController.text.isEmpty
-                        ? Text('Enter a URL')
+                        ? const Text('Enter a URL')
                         : FittedBox(
                             child: Image.network(
                               _imageUrlController.text,
@@ -388,7 +403,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   ),
                   Expanded(
                     child: TextFormField(
-                      decoration: InputDecoration(labelText: 'Image URL'),
+                      decoration: const InputDecoration(labelText: 'Image URL'),
                       keyboardType: TextInputType.url,
                       textInputAction: TextInputAction.done,
                       controller: _imageUrlController,
@@ -404,6 +419,21 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           imageUrl: value!,
                           id: '',
                         );
+                      },
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter an image URL.';
+                        }
+                        if (!value.startsWith('http') &&
+                            !value.startsWith('https')) {
+                          return 'Please enter a valid URL.';
+                        }
+                        if (!value.endsWith('.png') &&
+                            !value.endsWith('.jpg') &&
+                            !value.endsWith('.jpeg')) {
+                          return 'Please enter a valid image URL.';
+                        }
+                        return null;
                       },
                     ),
                   ),
