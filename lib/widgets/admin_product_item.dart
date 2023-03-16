@@ -15,7 +15,7 @@ class UserProductItem extends StatelessWidget {
     return ListTile(
       title: Text(title),
       leading: CircleAvatar(
-        backgroundImage: AssetImage(imageUrl),
+        backgroundImage:  NetworkImage(imageUrl),
       ),
       trailing: SizedBox(
         width: 100,

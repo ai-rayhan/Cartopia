@@ -1,3 +1,4 @@
+import 'package:bussiness_manager/Provider/Products.dart';
 import 'package:bussiness_manager/Provider/cart.dart';
 import 'package:bussiness_manager/screens/cart_screen.dart';
 import 'package:bussiness_manager/widgets/app_drawer.dart';
@@ -15,6 +16,30 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   bool _showOnlyFavorites = false;
+  bool _isinit = true;
+  bool isLoading = true;
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (_isinit) {
+      setState(() {
+        isLoading = true;
+      });
+      Provider.of<Products>(context).fachAndSetProducts()
+      .then((value) {
+         setState(() {
+          isLoading = false;
+        });
+      });
+    }
+    _isinit = false;
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,7 +83,11 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ],
       ),
       drawer: const AppDrawer(),
-      body: ProductsGrid(_showOnlyFavorites),
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : ProductsGrid(_showOnlyFavorites),
     );
   }
 }

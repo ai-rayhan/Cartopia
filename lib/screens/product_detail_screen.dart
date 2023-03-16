@@ -29,7 +29,7 @@ class ProductDetailScreen extends StatelessWidget {
                 margin: EdgeInsets.all(40.0),
                 height: 300,
                 width: double.infinity,
-                child: Image.asset(
+                child: Image.network(
                   loadedProduct.imageUrl,
                   fit: BoxFit.fitHeight,
                 )),
