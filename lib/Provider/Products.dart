@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'dart:math';
 
+import '/models/http_exeception.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'product.dart';
@@ -68,6 +68,7 @@ class Products with ChangeNotifier {
           description: prodata['description'],
           price: prodata['price'],
           imageUrl: prodata['imageUrl'],
+          isFavorite: prodata['isFavorite']
         ));
       });
       _items = loadedproducts;
@@ -128,8 +129,20 @@ class Products with ChangeNotifier {
     }
   }
 
-  void deleteProduct(String id) {
-    _items.removeWhere((prod) => prod.id == id);
-    notifyListeners();
+  Future<void> deleteProduct(String id) async {
+    final url =
+        'https://store-manager-f4301-default-rtdb.firebaseio.com/products/$id.json';
+    var existingProductIndex = _items.indexWhere((prod) => prod.id == id);
+    var exitingProduct = _items[existingProductIndex];
+     _items.removeAt(existingProductIndex);
+       notifyListeners();
+    try {
+      var response = await http.delete(Uri.parse(url));
+      if (response.statusCode >= 400) {
+        _items.insert(existingProductIndex, exitingProduct);
+        notifyListeners();
+        throw HttpExeception("Could not delete");
+      }
+    } catch (e) {}
   }
 }

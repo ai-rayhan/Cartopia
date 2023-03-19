@@ -1,5 +1,7 @@
-import 'package:flutter/foundation.dart';
+import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 class Product with ChangeNotifier {
   final String id;
   final String title;
@@ -16,8 +18,18 @@ class Product with ChangeNotifier {
     required this.imageUrl,
     this.isFavorite = false,
   });
-  toggleFavoriteStatus() {
+ Future<void> toggleFavoriteStatus() async{
+    var oldstatus = isFavorite;
     isFavorite = !isFavorite;
+    var url='https://store-manager-f4301-default-rtdb.firebaseio.com/products/$id.json';
+    try{
+     await http.patch(Uri.parse(url),body: json.encode({
+
+        'isFavorite':isFavorite
+
+      }));
+    }
+    catch(e){}
     notifyListeners();
   }
 }

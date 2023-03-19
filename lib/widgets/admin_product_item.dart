@@ -12,10 +12,11 @@ class UserProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var sc = ScaffoldMessenger.of(context);
     return ListTile(
       title: Text(title),
       leading: CircleAvatar(
-        backgroundImage:  NetworkImage(imageUrl),
+        backgroundImage: NetworkImage(imageUrl),
       ),
       trailing: SizedBox(
         width: 100,
@@ -24,14 +25,20 @@ class UserProductItem extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.edit),
               onPressed: () {
-                Navigator.pushNamed(context, EditProductScreen.routeName,arguments: id);
+                Navigator.pushNamed(context, EditProductScreen.routeName,
+                    arguments: id);
               },
               color: Theme.of(context).primaryColor,
             ),
             IconButton(
               icon: const Icon(Icons.delete),
-              onPressed: () {
-                Provider.of<Products>(context, listen: false).deleteProduct(id);
+              onPressed: () async {
+                try {
+                  await Provider.of<Products>(context, listen: false)
+                      .deleteProduct(id);
+                } catch (e) {
+                  sc.showSnackBar(SnackBar(content: Text(e.toString())));
+                }
               },
               color: Theme.of(context).errorColor,
             ),
