@@ -1,6 +1,8 @@
 import 'dart:math';
 
+import 'package:bussiness_manager/Provider/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 enum AuthMode { Signup, Login }
 
@@ -40,8 +42,8 @@ class AuthScreen extends StatelessWidget {
                   Flexible(
                     child: Container(
                       margin: const EdgeInsets.only(bottom: 20.0),
-                      padding:
-                          const EdgeInsets.symmetric(vertical: 8.0, horizontal: 94.0),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 94.0),
                       transform: Matrix4.rotationZ(-8 * pi / 180)
                         ..translate(-10.0),
                       // ..translate(-10.0),
@@ -69,7 +71,7 @@ class AuthScreen extends StatelessWidget {
                   ),
                   Flexible(
                     flex: deviceSize.width > 600 ? 2 : 1,
-                    child:  AuthCard(),
+                    child: AuthCard(),
                   ),
                 ],
               ),
@@ -83,8 +85,6 @@ class AuthScreen extends StatelessWidget {
 
 class AuthCard extends StatefulWidget {
   const AuthCard({super.key});
-
-
 
   @override
   _AuthCardState createState() => _AuthCardState();
@@ -100,7 +100,7 @@ class _AuthCardState extends State<AuthCard> {
   var _isLoading = false;
   final _passwordController = TextEditingController();
 
-  void _submit() {
+  void _submit() async{
     if (!_formKey.currentState!.validate()) {
       // Invalid!
       return;
@@ -110,9 +110,10 @@ class _AuthCardState extends State<AuthCard> {
       _isLoading = true;
     });
     if (_authMode == AuthMode.Login) {
-      // Log user in
+      await Provider.of<Auth>(context,listen: false).signin(_authData['email']!, _authData['password']!);
     } else {
-      // Sign user up
+
+     await Provider.of<Auth>(context,listen: false).signup(_authData['email']!, _authData['password']!);
     }
     setState(() {
       _isLoading = false;
@@ -158,7 +159,6 @@ class _AuthCardState extends State<AuthCard> {
                       return 'Invalid email!';
                     }
                     return null;
-                    return null;
                   },
                   onSaved: (value) {
                     _authData['email'] = value!;
@@ -180,7 +180,8 @@ class _AuthCardState extends State<AuthCard> {
                 if (_authMode == AuthMode.Signup)
                   TextFormField(
                     enabled: _authMode == AuthMode.Signup,
-                    decoration: const InputDecoration(labelText: 'Confirm Password'),
+                    decoration:
+                        const InputDecoration(labelText: 'Confirm Password'),
                     obscureText: true,
                     validator: _authMode == AuthMode.Signup
                         ? (value) {
@@ -197,22 +198,24 @@ class _AuthCardState extends State<AuthCard> {
                   const CircularProgressIndicator()
                 else
                   RawMaterialButton(
-                    child:
-                        Text(_authMode == AuthMode.Login ? 'LOGIN' : 'SIGN UP'),
+
+                   
                     onPressed: _submit,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
-                
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 30.0, vertical: 8.0),
+                   child:
+                        Text(_authMode == AuthMode.Login ? 'LOGIN' : 'SIGN UP'),
                   ),
                 RawMaterialButton(
+                  onPressed: _switchAuthMode,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   child: Text(
                       '${_authMode == AuthMode.Login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
-                  onPressed: _switchAuthMode,
-                  padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
               ],
             ),

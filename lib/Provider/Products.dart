@@ -7,6 +7,9 @@ import 'product.dart';
 import 'package:http/http.dart' as http;
 
 class Products with ChangeNotifier {
+  var authToken;
+  var userId;
+  Products(this.authToken, this._items, this.userId);
   List<Product> _items = [
     // Product(
     //     id: 'p1',
@@ -56,20 +59,25 @@ class Products with ChangeNotifier {
 
   Future<void> fachAndSetProducts() async {
     var url =
-        'https://store-manager-f4301-default-rtdb.firebaseio.com/products.json';
+        'https://store-manager-f4301-default-rtdb.firebaseio.com/products.json?auth=$authToken';
     try {
       var response = await http.get(Uri.parse(url));
       var extractedData = json.decode(response.body) as Map<String, dynamic>;
+
+      url =
+          'https://store-manager-f4301-default-rtdb.firebaseio.com/userFavorie/$userId.json?auth=$authToken';
+      var favresponse = await http.get(Uri.parse(url));
+      var favRsponseData = json.decode(favresponse.body);
+
       final List<Product> loadedproducts = [];
       extractedData.forEach((prodId, prodata) {
         loadedproducts.add(Product(
-          id: prodId,
-          title: prodata['title'],
-          description: prodata['description'],
-          price: prodata['price'],
-          imageUrl: prodata['imageUrl'],
-          isFavorite: prodata['isFavorite']
-        ));
+            id: prodId,
+            title: prodata['title'],
+            description: prodata['description'],
+            price: prodata['price'],
+            imageUrl: prodata['imageUrl'],
+            isFavorite:favRsponseData==null ? false: favRsponseData[prodId]??false));
       });
       _items = loadedproducts;
       notifyListeners();
@@ -77,8 +85,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    const url =
-        'https://store-manager-f4301-default-rtdb.firebaseio.com/products.json';
+    final url =
+        'https://store-manager-f4301-default-rtdb.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.post(Uri.parse(url),
           body: jsonEncode({
@@ -111,7 +119,7 @@ class Products with ChangeNotifier {
     if (prodIndex >= 0) {
       try {
         var url =
-            'https://store-manager-f4301-default-rtdb.firebaseio.com/products/$id.json';
+            'https://store-manager-f4301-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken';
         await http.patch(Uri.parse(url),
             body: json.encode({
               'title': newProduct.title,
@@ -131,11 +139,11 @@ class Products with ChangeNotifier {
 
   Future<void> deleteProduct(String id) async {
     final url =
-        'https://store-manager-f4301-default-rtdb.firebaseio.com/products/$id.json';
+        'https://store-manager-f4301-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken';
     var existingProductIndex = _items.indexWhere((prod) => prod.id == id);
     var exitingProduct = _items[existingProductIndex];
-     _items.removeAt(existingProductIndex);
-       notifyListeners();
+    _items.removeAt(existingProductIndex);
+    notifyListeners();
     try {
       var response = await http.delete(Uri.parse(url));
       if (response.statusCode >= 400) {
