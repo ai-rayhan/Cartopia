@@ -3,6 +3,7 @@
 // https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=[API_KEY]
 
 import 'dart:convert';
+import 'dart:async';
 
 import 'package:bussiness_manager/models/http_exeception.dart';
 import 'package:flutter/foundation.dart';
@@ -12,17 +13,18 @@ const apikey = 'AIzaSyCNc89IfAo0YaLH8KfV4HNZoCTWngfFd2A';
 
 class Auth with ChangeNotifier {
   var token;
-  late String userId;
+  var userId;
   var expiryDate;
-
+  var authtimer;
   bool get isAuth {
     return token != null;
   }
-  String get getUserId {
+
+   get getUserId {
     return userId;
   }
 
-   get getToken {
+  get getToken {
     if (expiryDate != null &&
         expiryDate.isAfter(DateTime.now()) &&
         token != null) {
@@ -51,7 +53,8 @@ class Auth with ChangeNotifier {
       userId = responseData['localId'];
       expiryDate = DateTime.now()
           .add(Duration(seconds: int.parse(responseData['expiresIn'])));
-
+      print(expiryDate);
+      autoLogout();
       notifyListeners();
       print(responseData);
     } catch (error) {
@@ -65,5 +68,24 @@ class Auth with ChangeNotifier {
 
   signin(String email, String password) {
     return authenticate(email, password, 'signInWithPassword');
+  }
+
+  logout() {
+    token = null;
+    userId = '';
+    expiryDate = null;
+    if (authtimer != null) {
+      authtimer.cancel();
+      authtimer = null;
+    }
+    notifyListeners();
+  }
+
+  autoLogout() {
+    if (authtimer != null) {
+      authtimer.cancel();
+    }
+    final exparytime = expiryDate.difference(DateTime.now()).inSeconds;
+    authtimer = Timer(Duration(seconds: exparytime), logout);
   }
 }

@@ -11,13 +11,14 @@ class UserProductsScreen extends StatelessWidget {
   static const routeName = 'productsEditscreen';
 
   const UserProductsScreen({super.key});
+
   refresh(BuildContext context)async{
-   await  Provider.of<Products>(context,listen: false).fachAndSetProducts();
+   await  Provider.of<Products>(context,listen: false).fachAndSetProducts(true);
   }
 
   @override
   Widget build(BuildContext context) {
-    final productsData = Provider.of<Products>(context);
+    // final productsData = Provider.of<Products>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -32,21 +33,28 @@ class UserProductsScreen extends StatelessWidget {
         ],
       ),
       drawer: const AppDrawer(),
-      body: RefreshIndicator(
-        onRefresh: () => refresh(context),
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: ListView.builder(
-            itemCount: productsData.items.length,
-            itemBuilder: (_, i) => Column(
-              children: [
-                UserProductItem(
-                  productsData.items[i].title,
-                  productsData.items[i].imageUrl,
-                  productsData.items[i].id,
+      body: FutureBuilder(
+        future: refresh(context),
+        builder: (context, snapshot) => snapshot.connectionState==ConnectionState.waiting?Center(child: CircularProgressIndicator(),):
+        RefreshIndicator(
+          onRefresh: () => refresh(context),
+          child: Consumer<Products>(
+            builder: (context, productsData, _) => 
+             Padding(
+              padding: const EdgeInsets.all(8),
+              child: ListView.builder(
+                itemCount: productsData.items.length,
+                itemBuilder: (_, i) => Column(
+                  children: [
+                    UserProductItem(
+                      productsData.items[i].title,
+                      productsData.items[i].imageUrl,
+                      productsData.items[i].id,
+                    ),
+                    const Divider(),
+                  ],
                 ),
-                const Divider(),
-              ],
+              ),
             ),
           ),
         ),
