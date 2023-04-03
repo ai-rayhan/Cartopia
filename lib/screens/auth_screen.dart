@@ -90,7 +90,8 @@ class AuthCard extends StatefulWidget {
   _AuthCardState createState() => _AuthCardState();
 }
 
-class _AuthCardState extends State<AuthCard> {
+class _AuthCardState extends State<AuthCard>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<FormState> _formKey = GlobalKey();
   AuthMode _authMode = AuthMode.Login;
   Map<String, String> _authData = {
@@ -99,8 +100,31 @@ class _AuthCardState extends State<AuthCard> {
   };
   var _isLoading = false;
   final _passwordController = TextEditingController();
+  late AnimationController animationController;
+  late Animation<Size> heightAnimation;
+  @override
+  void initState() {
+    animationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    heightAnimation = Tween<Size>(
+            begin: Size(double.infinity, 260), end: Size(double.infinity, 320))
+        .animate(
+            CurvedAnimation(parent: animationController, curve: Curves.linear));
 
-  void _submit() async{
+    heightAnimation.addListener(() {
+      setState(() {});
+    });
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
+
+  void _submit() async {
     if (!_formKey.currentState!.validate()) {
       // Invalid!
       return;
@@ -110,10 +134,11 @@ class _AuthCardState extends State<AuthCard> {
       _isLoading = true;
     });
     if (_authMode == AuthMode.Login) {
-      await Provider.of<Auth>(context,listen: false).signin(_authData['email']!, _authData['password']!);
+      await Provider.of<Auth>(context, listen: false)
+          .signin(_authData['email']!, _authData['password']!);
     } else {
-
-     await Provider.of<Auth>(context,listen: false).signup(_authData['email']!, _authData['password']!);
+      await Provider.of<Auth>(context, listen: false)
+          .signup(_authData['email']!, _authData['password']!);
     }
     setState(() {
       _isLoading = false;
@@ -125,10 +150,12 @@ class _AuthCardState extends State<AuthCard> {
       setState(() {
         _authMode = AuthMode.Signup;
       });
+      animationController.forward();
     } else {
       setState(() {
         _authMode = AuthMode.Login;
       });
+      animationController.reverse();
     }
   }
 
@@ -141,9 +168,8 @@ class _AuthCardState extends State<AuthCard> {
       ),
       elevation: 8.0,
       child: Container(
-        height: _authMode == AuthMode.Signup ? 320 : 260,
-        constraints:
-            BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 260),
+        height: heightAnimation.value.height,
+        constraints: BoxConstraints(minHeight: heightAnimation.value.height),
         width: deviceSize.width * 0.75,
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -198,15 +224,13 @@ class _AuthCardState extends State<AuthCard> {
                   const CircularProgressIndicator()
                 else
                   RawMaterialButton(
-
-                   
                     onPressed: _submit,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                     padding: const EdgeInsets.symmetric(
                         horizontal: 30.0, vertical: 8.0),
-                   child:
+                    child:
                         Text(_authMode == AuthMode.Login ? 'LOGIN' : 'SIGN UP'),
                   ),
                 RawMaterialButton(
