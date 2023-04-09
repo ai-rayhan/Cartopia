@@ -55,6 +55,10 @@ class Products with ChangeNotifier {
     return _items.where((prodItem) => prodItem.isFavorite).toList();
   }
 
+  List<Product> searchProducts(String searchvalue) {
+    return _items.where((prodItem) => prodItem.title.toLowerCase().contains(searchvalue.toLowerCase())).toList();
+  }
+
   findById(String id) {
     return _items.firstWhere((prod) => prod.id == id);
   }

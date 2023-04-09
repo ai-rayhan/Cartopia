@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
               fontFamily: 'Lato',
             ),
             title: 'Bussines_Manager',
-            home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+            home: auth.isAuth ? ProductsOverviewScreen() :FutureBuilder(future: auth.trytoLogIn(),builder: (context, snapshot) =>snapshot.connectionState==ConnectionState.waiting?CircularProgressIndicator(): AuthScreen()),
             routes: {
               ProductDetailScreen.routeName: (ctx) =>
                   const ProductDetailScreen(),

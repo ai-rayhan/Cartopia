@@ -8,6 +8,7 @@ import 'dart:async';
 import 'package:bussiness_manager/models/http_exeception.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 const apikey = 'AIzaSyCNc89IfAo0YaLH8KfV4HNZoCTWngfFd2A';
 
@@ -20,7 +21,7 @@ class Auth with ChangeNotifier {
     return token != null;
   }
 
-   get getUserId {
+  get getUserId {
     return userId;
   }
 
@@ -53,9 +54,16 @@ class Auth with ChangeNotifier {
       userId = responseData['localId'];
       expiryDate = DateTime.now()
           .add(Duration(seconds: int.parse(responseData['expiresIn'])));
-      print(expiryDate);
+      final prefs = await SharedPreferences.getInstance();
+      final authdata = json.encode({
+        'token': token,
+        'userId': userId,
+        'exparyDate': expiryDate.toIso8601String(),
+      });
+      prefs.setString('authdata', authdata);
       autoLogout();
       notifyListeners();
+      trytoLogIn();
       print(responseData);
     } catch (error) {
       throw error;
@@ -70,7 +78,28 @@ class Auth with ChangeNotifier {
     return authenticate(email, password, 'signInWithPassword');
   }
 
-  logout() {
+  Future<bool> trytoLogIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    final getauthdata = prefs.getString('authdata');
+    if (!prefs.containsKey('authdata')) {
+      return false;
+    } else {
+      final exetractedata = json.decode(getauthdata!) as Map<String, dynamic>;
+      final exparydate = DateTime.parse(exetractedata['exparyDate'].toString());
+      if (exparydate.isBefore(DateTime.now())) {
+        return false;
+      }
+      token = exetractedata['token'];
+      userId = exetractedata['userId'];
+      expiryDate = exparydate;
+      print('$expiryDate $userId $token');
+      notifyListeners();
+      autoLogout();
+      return true;
+    }
+  }
+
+  logout() async{
     token = null;
     userId = '';
     expiryDate = null;
@@ -78,6 +107,8 @@ class Auth with ChangeNotifier {
       authtimer.cancel();
       authtimer = null;
     }
+    final prefs = await SharedPreferences.getInstance();
+      prefs.remove('authdata');
     notifyListeners();
   }
 
