@@ -1,6 +1,6 @@
 # bussiness_manager
 
-A new Flutter E-commerce aplication project.It's backend is firebase.Admin panel included👨‍💻
+A new Flutter E-commerce Application project.It's backend is firebase.Admin panel included👨‍💻
 
 ## Getting Started
 
