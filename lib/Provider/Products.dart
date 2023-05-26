@@ -56,7 +56,10 @@ class Products with ChangeNotifier {
   }
 
   List<Product> searchProducts(String searchvalue) {
-    return _items.where((prodItem) => prodItem.title.toLowerCase().contains(searchvalue.toLowerCase())).toList();
+    return _items
+        .where((prodItem) =>
+            prodItem.title.toLowerCase().contains(searchvalue.toLowerCase()))
+        .toList();
   }
 
   findById(String id) {
@@ -71,6 +74,7 @@ class Products with ChangeNotifier {
     try {
       var response = await http.get(Uri.parse(url));
       var extractedData = json.decode(response.body) as Map<String, dynamic>;
+      print(response.body);
 
       url =
           'https://store-manager-f4301-default-rtdb.firebaseio.com/userFavorie/$userId.json?auth=$authToken';
@@ -93,8 +97,8 @@ class Products with ChangeNotifier {
       notifyListeners();
     } catch (e) {}
   }
-  
-   // hive
+
+  // hive
   // final hivebox = Hive.box('hiveBox');
 
   // Future<void> addProduct2(Product product) async {

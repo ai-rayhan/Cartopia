@@ -2,6 +2,7 @@ import 'package:bussiness_manager/Provider/auth.dart';
 import 'package:bussiness_manager/Provider/cart.dart';
 import 'package:bussiness_manager/screens/auth_screen.dart';
 import 'package:bussiness_manager/screens/products_overview_screen.dart';
+import 'package:bussiness_manager/utilites/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +12,7 @@ import '../Provider/orders.dart';
 import 'screens/cart_screen.dart';
 import 'screens/admin_product_screen.dart';
 import 'screens/edit_products_screen.dart';
+import 'screens/offer_week_deals.dart';
 import 'screens/orders_screen.dart';
 import 'screens/product_detail_screen.dart';
 
@@ -49,8 +51,9 @@ class MyApp extends StatelessWidget {
         builder: (context, auth, child) => MaterialApp(
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
-              primarySwatch: Colors.purple,
+              primarySwatch: Colors.blueGrey,
               fontFamily: 'Lato',
+              // iconButtonTheme: IconButtonThemeData(style: ButtonStyle(iconColor: MaterialStatePropertyAll(indigo)))
             ),
             title: 'Bussines_Manager',
             home: auth.isAuth ? ProductsOverviewScreen() :FutureBuilder(future: auth.trytoLogIn(),builder: (context, snapshot) =>snapshot.connectionState==ConnectionState.waiting?CircularProgressIndicator(): AuthScreen()),
@@ -61,6 +64,7 @@ class MyApp extends StatelessWidget {
               OrdersScreen.routename: (ctx) => const OrdersScreen(),
               UserProductsScreen.routeName: (ctx) => UserProductsScreen(),
               EditProductScreen.routeName: (ctx) => EditProductScreen(),
+              OfferScreen.routeName: (ctx) => OfferScreen(),
             }),
       ),
     );

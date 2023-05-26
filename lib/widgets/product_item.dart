@@ -1,4 +1,5 @@
 import 'package:bussiness_manager/Provider/auth.dart';
+import 'package:bussiness_manager/utilites/constant.dart';
 
 import '../Provider/cart.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ class ProductItem extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
         footer: GridTileBar(
-          backgroundColor: Colors.black87,
+          backgroundColor: sky,
           leading: Consumer<Product>(
             builder: (context, value, _) => IconButton(
               icon: Icon(

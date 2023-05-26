@@ -13,10 +13,20 @@ class AppDrawer extends StatelessWidget {
     return Drawer(
       child: Column(
         children: <Widget>[
-          AppBar(
-            title: const Text('Hello Friend!'),
-            automaticallyImplyLeading: false,
-          ),
+          // AppBar(
+          //   title: const Text('Hello Friend!'),
+          //   automaticallyImplyLeading: false,
+          // ),
+         const DrawerHeader(child:Center(
+                child: Text(
+                  "MyShop",
+                  style: TextStyle(
+                      fontSize: 25.0,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.blueGrey
+                     ),
+                ),
+              ) ,),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.shop),
